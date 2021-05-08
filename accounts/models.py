@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
-from .manager import UserManger
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+
 
 # 앞에는 DB에 저장되는 값
 # 뒤에는 페이지나 폼에서 표시하는 값
@@ -11,20 +11,68 @@ class TypeDefine(object):
     )
 
 
+class UserManger(BaseUserManager):
+
+    def create(self, email=None, password=None):
+        if not email:
+            raise ValueError("The Email must be set")
+        if not password:
+            raise ValueError("THe password must be set")
+
+        user = self.model(email=email, password=password)
+        user.set_password(password)
+        user.is_staff = False
+        user.is_superuser = False
+        user.save(using=self._db)
+
+        return self
+
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email must be set")
+        if not password:
+            raise ValueError("THe password must be set")
+
+        user = self.model(email=email, password=password)
+        user.set_password(password)
+        print(user.password)
+        user.is_staff = False
+        user.is_superuser = False
+        user.save(using=self._db)
+
+        return self.create_user(email, password)
+
+    def create_superuser(self, email, password, **extra_fields):
+
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("SuperUser must have is_staff = True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("SuperUser must have is_superuser = True.")
+        return self.create_user(email, password, **extra_fields)
+
+
 # Create your models here.
 
 class User(AbstractBaseUser):
-    email = models.EmailField(max_length=50, verbose_name="User Email", unique=True)
-    uuid = models.UUIDField(max_length=32, editable=False, verbose_name="User UUID")
-    type = models.CharField(max_length=20, choices=TypeDefine.USER_TYPES, default=None)
+    email = models.EmailField(max_length=50, null=False, blank=False, verbose_name="User Email", unique=True)
+    password = models.CharField(max_length=128, verbose_name="User Password")
+    type = models.CharField(max_length=20, choices=TypeDefine.USER_TYPES)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    is_superuser = models.BooleanField(default=False)
 
     objects = UserManger()
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['password']
+
     def __str__(self):
         return self.email
+
+    is_active = True
 
 # class SubscriberManager(models.Manager):
 #     def get_queryset(self, *args, **kwargs):

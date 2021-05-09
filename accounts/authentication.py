@@ -12,6 +12,8 @@ from .utils import jwt_get_username_from_payload_handler
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 jwt_get_username_from_payload = jwt_get_username_from_payload_handler
 
+User = get_user_model()
+
 
 class CustomBaseJSONWebTokenAuthentication(BaseJSONWebTokenAuthentication):
     """
@@ -22,7 +24,6 @@ class CustomBaseJSONWebTokenAuthentication(BaseJSONWebTokenAuthentication):
         """
         Returns an active user that matches the payload's user id and email.
         """
-        User = get_user_model()
         email = jwt_get_username_from_payload(payload)
         if not email:
             msg = _('Invalid payload.')

@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Profile(APIView):
     authentication_classes = (CustomJSONWebTokenAuthentication,)
 

@@ -1,9 +1,11 @@
 from django.conf.urls import url
 
 from .views import (
-    ObtainToken
+    session,
+    BookInfo
 )
 
 urlpatterns = [
-    url(r'token$', ObtainToken.as_view()),
+    url(r'token$', session.ObtainToken.as_view()),
+    url(r'profile$', BookInfo.Profile.as_view())
 ]

@@ -16,6 +16,7 @@ User = get_user_model()
 class ObtainToken(APIView):
 
     def post(self, request):
+        """ JWT 토큰 발급 """
         email = request.data.get("email", None)
         password = request.data.get("password", None)
 
@@ -32,5 +33,6 @@ class ObtainToken(APIView):
             raise auth_exception.InvalidCredential()
 
         return Response({
-            "access-token": jwt_encode_handler(payload)
+            "access-token": "JWT " + jwt_encode_handler(payload)
         })
+

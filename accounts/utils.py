@@ -5,7 +5,7 @@ from rest_framework_jwt.settings import api_settings
 
 def jwt_payload_handler(user):
     payload = {
-        'email': user.email,
+        'username': user.email,
         'exp': datetime.utcnow() + api_settings.JWT_EXPIRATION_DELTA
     }
     # Include original issued at time for a brand new token,

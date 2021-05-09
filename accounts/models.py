@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
+
 # 앞에는 DB에 저장되는 값
 # 뒤에는 페이지나 폼에서 표시하는 값
 class TypeDefine(object):
@@ -14,7 +15,7 @@ class TypeDefine(object):
 
 class UserManger(BaseUserManager):
 
-    def create(self, email=None, password=None):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("The Email must be set")
         if not password:
@@ -26,22 +27,7 @@ class UserManger(BaseUserManager):
         user.is_superuser = False
         user.save(using=self._db)
 
-        return self
-
-    # def create_user(self, email, password=None, **extra_fields):
-    #     if not email:
-    #         raise ValueError("The Email must be set")
-    #     if not password:
-    #         raise ValueError("THe password must be set")
-    #
-    #     user = self.model(email=email, password=password)
-    #     user.set_password(password)
-    #     print(user.password)
-    #     user.is_staff = False
-    #     user.is_superuser = False
-    #     user.save(using=self._db)
-    #
-    #     return self.create_user(email, password)
+        return user
 
     def create_superuser(self, email, password, **extra_fields):
 
@@ -59,11 +45,11 @@ class UserManger(BaseUserManager):
 # Create your models here.
 
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField(primary_key=True, auto_created=True, default=str(uuid.uuid4()))
+    id = models.UUIDField(primary_key=True, default=str(uuid.uuid4()))
     email = models.EmailField(max_length=50, null=False, blank=False, verbose_name="User Email", unique=True)
     password = models.CharField(_('password'), max_length=128)
     type = models.CharField(max_length=20, choices=TypeDefine.USER_TYPES)
-    last_login = models.DateTimeField(_('last login'), blank=True, null=True)
+    last_login = models.DateTimeField(_('last login'), auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
 
     objects = UserManger()

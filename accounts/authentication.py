@@ -3,8 +3,11 @@ from django.utils.translation import ugettext as _
 from rest_framework import exceptions
 
 from rest_framework_jwt.settings import api_settings
+from rest_framework_jwt.authentication import (
+    BaseJSONWebTokenAuthentication,
+    JSONWebTokenAuthentication
+)
 from .utils import jwt_get_username_from_payload_handler
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication, JSONWebTokenAuthentication
 
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 jwt_get_username_from_payload = jwt_get_username_from_payload_handler
@@ -38,5 +41,8 @@ class CustomBaseJSONWebTokenAuthentication(BaseJSONWebTokenAuthentication):
         return user
 
 
-class CustomJSONWebTokenAuthentication(CustomBaseJSONWebTokenAuthentication, JSONWebTokenAuthentication):
+class CustomJSONWebTokenAuthentication(
+    CustomBaseJSONWebTokenAuthentication,
+    JSONWebTokenAuthentication
+):
     pass

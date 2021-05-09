@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 
@@ -26,9 +27,10 @@ class ObtainToken(APIView):
 
         user = User.objects.get(email=email)
 
-        # valid credential checked
         if check_password(password, user.password):
             payload = jwt_payload_handler(user)
+            user.last_login = timezone.now()
+            user.save()
         else:
             raise auth_exception.InvalidCredential()
 

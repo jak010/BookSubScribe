@@ -137,6 +137,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'EXCEPTION_HANDLER': 'book.utils.custom_exception_handler'
 }
 
 import datetime
